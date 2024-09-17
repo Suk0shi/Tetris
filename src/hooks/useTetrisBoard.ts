@@ -74,6 +74,7 @@ type Action = {
     type: 'start' | 'drop' | 'commit' | 'move';
     newBoard?: BoardShape;
     newBlock?: Block;
+    holdingBlock?: Block;
     isPressingLeft?: boolean;
     isPressingRight?: boolean;
     isRotating?: boolean;

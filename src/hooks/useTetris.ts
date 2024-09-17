@@ -15,6 +15,8 @@ export function useTetris() {
     const [tickSpeed, setTickSpeed] = useState<TickSpeed | null>(null);
     const [isCommitting, setIsCommitting] = useState(false);
     const [upcomingBlocks, setUpcomingBlocks] = useState<Block[]>([]);
+    const [holdingBlock, setHoldingBlock] = useState<Block | null>(null);
+    const [justHeld, setJustHeld] = useState(false);
     
     const [
         { board, droppingRow, droppingColumn, droppingBlock, droppingShape },
@@ -28,6 +30,7 @@ export function useTetris() {
             getRandomBlock(),
         ];
         setUpcomingBlocks(startingBlocks);
+        setHoldingBlock(null);
         setScore(0);
         setIsPlaying(true);
         setTickSpeed(TickSpeed.Normal);
@@ -74,7 +77,46 @@ export function useTetris() {
        setUpcomingBlocks(newUpcomingBlocks);
        dispatchBoardState({ type: 'commit', newBoard, newBlock });
        setIsCommitting(false);
+       setJustHeld(false)
     }, [board, dispatchBoardState, droppingBlock, droppingColumn, droppingRow, droppingShape]);
+
+    const swapHolding = useCallback(() => {
+        
+        setJustHeld(true);
+ 
+        const newBoard = structuredClone(board) as BoardShape;
+        // addShapeToBoard(
+        //  newBoard,
+        //  droppingBlock, 
+        //  droppingShape,
+        //  droppingRow,
+        //  droppingColumn
+        // );
+
+        let newBlock = null;
+        const newUpcomingBlocks = structuredClone(upcomingBlocks) as Block[];
+ 
+        if (holdingBlock !== null) {
+            newBlock = holdingBlock; 
+        } else {
+            newBlock = newUpcomingBlocks.pop() as Block;
+            newUpcomingBlocks.unshift(getRandomBlock());
+        }
+ 
+        if (hasCollisions(board, SHAPES[newBlock].shape, 0, 3)) {
+         setIsPlaying(false);
+         setTickSpeed(null);
+        } else {
+         setTickSpeed(TickSpeed.Normal);
+        }
+ 
+        setTickSpeed(TickSpeed.Normal);
+        if (holdingBlock === null) {
+            setUpcomingBlocks(newUpcomingBlocks);
+        }
+        dispatchBoardState({ type: 'commit', newBoard, newBlock });
+        setIsCommitting(false);
+     }, [board, dispatchBoardState, droppingBlock, droppingColumn, droppingRow, droppingShape, holdingBlock]);
 
     const gameTick = useCallback(() => {
         if (isCommitting) {
@@ -145,6 +187,11 @@ export function useTetris() {
                 isPressingRight = true;
                 updateMovementInterval();
             }
+
+            if (event.key === 'Shift' && !justHeld) {
+                setHoldingBlock(droppingBlock)
+                swapHolding()
+            }
         };
 
         const handleKeyUp = (event: KeyboardEvent) => {
@@ -161,6 +208,7 @@ export function useTetris() {
                 isPressingRight = false;
                 updateMovementInterval();
             }
+            
         };
 
         document.addEventListener('keydown', handleKeyDown);
@@ -171,7 +219,7 @@ export function useTetris() {
             setTickSpeed(TickSpeed.Normal);
         };
 
-    }, [isPlaying]);
+    }, [isPlaying, droppingBlock]);
 
     useInterval(() => {
         if (!isPlaying) {
@@ -198,6 +246,7 @@ export function useTetris() {
         isPlaying,
         score,
         upcomingBlocks,
+        holdingBlock,
     };
 }
 

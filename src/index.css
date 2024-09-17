@@ -2,7 +2,7 @@
   display: grid;
   grid-template-areas: 
   ". title ."
-  ". game controls";
+  "holding game controls";
   grid-template-columns: repeat(3, 1fr);
 }
 
@@ -13,6 +13,18 @@ h1 {
 
 .controls {
   grid-area: controls
+}
+
+.holdingBox {
+  grid-area: holding;
+  display: grid;
+  justify-items: end;
+  grid-template-rows: 0fr 0fr;
+}
+
+.holdingBox h2 {
+  width: 128px;
+  text-align: center;
 }
 
 .board {
