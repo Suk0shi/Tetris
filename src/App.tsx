@@ -2,6 +2,7 @@ import Board from "./components/Board";
 import HoldingBlock from "./components/HoldingBlock";
 import UpcomingBlocks from './components/UpcomingBlocks';
 import { useTetris } from "./hooks/useTetris";
+import tetris from "./assets/tetris.png"
 
 
 
@@ -11,7 +12,7 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Tetris</h1>
+      <img src={tetris} alt="Tetris" />
       {isPlaying ? (
           <div className="holdingBox">
             <h2>Hold</h2>
@@ -19,13 +20,15 @@ function App() {
           </div>
         ) : null}
       
-      <Board currentBoard={board}/>
+      <div className="boardContainer">
+        <Board currentBoard={board}/>
+      </div>
       <div className="controls">
       <h2>Score: {score}</h2>
         {isPlaying ? (
           <UpcomingBlocks upcomingBlocks={upcomingBlocks}/>
           ) : (
-          <button onClick={startGame}>New Game</button>
+          <button className="newGameButton" onClick={startGame}><h2>New Game</h2></button>
         )}
       </div>
     </div>

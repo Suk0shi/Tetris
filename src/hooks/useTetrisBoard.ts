@@ -77,10 +77,28 @@ type Action = {
     holdingBlock?: Block;
     isPressingLeft?: boolean;
     isPressingRight?: boolean;
-    isRotating?: boolean;
+    isRotatingClockwise?: boolean;
+    isRotatingAnticlockwise?: boolean;
 };
 
-function rotateBlock(shape: BlockShape): BlockShape {
+function rotateBlockAnticlockwise(shape: BlockShape): BlockShape {
+    const rows = shape.length;
+    const columns = shape[0].length;
+
+    const rotated = Array(rows)
+        .fill(null)
+        .map(() => Array(columns).fill(false));
+
+    for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+            rotated[rows - 1 - row][column] = shape[column][row];
+        }
+    }
+
+    return rotated;
+}
+
+function rotateBlockClockwise(shape: BlockShape): BlockShape {
     const rows = shape.length;
     const columns = shape[0].length;
 
@@ -125,8 +143,10 @@ function boardReducer(state: BoardState, action: Action): BoardState {
                 droppingShape: SHAPES[action.newBlock].shape,
             }
         case 'move':
-            const rotatedShape = action.isRotating
-                ? rotateBlock(newState.droppingShape)
+            const rotatedShape = action.isRotatingClockwise
+                ? rotateBlockClockwise(newState.droppingShape)
+                : action.isRotatingAnticlockwise 
+                ? rotateBlockAnticlockwise(newState.droppingShape)
                 : newState.droppingShape;
             let columnOffset = action.isPressingLeft ? -1 : 0;
             columnOffset = action.isPressingRight ? 1 : columnOffset;

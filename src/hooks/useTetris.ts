@@ -7,16 +7,18 @@ enum TickSpeed {
     Normal = 800,
     Sliding = 100,
     Fast = 50,
+    HardDrop = 0,
 }
 
 export function useTetris() {
     const [score, setScore] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
-    const [tickSpeed, setTickSpeed] = useState<TickSpeed | null>(null);
+    const [tickSpeed, setTickSpeed] = useState<TickSpeed | null | number>(null);
     const [isCommitting, setIsCommitting] = useState(false);
     const [upcomingBlocks, setUpcomingBlocks] = useState<Block[]>([]);
     const [holdingBlock, setHoldingBlock] = useState<Block | null>(null);
     const [justHeld, setJustHeld] = useState(false);
+    const [rampingTickSpeed, setRampingTickSpeed] = useState<number>(800);
     
     const [
         { board, droppingRow, droppingColumn, droppingBlock, droppingShape },
@@ -33,14 +35,15 @@ export function useTetris() {
         setHoldingBlock(null);
         setScore(0);
         setIsPlaying(true);
-        setTickSpeed(TickSpeed.Normal);
+        setRampingTickSpeed(800);
+        setTickSpeed(rampingTickSpeed);
         dispatchBoardState({ type: 'start' })
-    }, [dispatchBoardState])
+    }, [dispatchBoardState, setRampingTickSpeed])
 
     const commitPosition = useCallback(() => {
        if (!hasCollisions(board, droppingShape, droppingRow + 1, droppingColumn)) {
         setIsCommitting(false);
-        setTickSpeed(TickSpeed.Normal)
+        setTickSpeed(rampingTickSpeed)
         return;
        } 
 
@@ -69,20 +72,23 @@ export function useTetris() {
         setIsPlaying(false);
         setTickSpeed(null);
        } else {
-        setTickSpeed(TickSpeed.Normal);
+        setTickSpeed(rampingTickSpeed);
        }
 
        setScore((prevScore) => prevScore + getPoints(numCleared));
-       setTickSpeed(TickSpeed.Normal);
+       setTickSpeed(rampingTickSpeed);
        setUpcomingBlocks(newUpcomingBlocks);
        dispatchBoardState({ type: 'commit', newBoard, newBlock });
        setIsCommitting(false);
        setJustHeld(false)
-    }, [board, dispatchBoardState, droppingBlock, droppingColumn, droppingRow, droppingShape]);
+       if (rampingTickSpeed > 100) {
+           setRampingTickSpeed(rampingTickSpeed - 30)
+       }
+    }, [board, dispatchBoardState, droppingBlock, droppingColumn, droppingRow, droppingShape, justHeld]);
 
     const swapHolding = useCallback(() => {
         
-        setJustHeld(true);
+        
  
         const newBoard = structuredClone(board) as BoardShape;
         // addShapeToBoard(
@@ -107,16 +113,16 @@ export function useTetris() {
          setIsPlaying(false);
          setTickSpeed(null);
         } else {
-         setTickSpeed(TickSpeed.Normal);
+         setTickSpeed(rampingTickSpeed);
         }
  
-        setTickSpeed(TickSpeed.Normal);
+        setTickSpeed(rampingTickSpeed);
         if (holdingBlock === null) {
             setUpcomingBlocks(newUpcomingBlocks);
         }
         dispatchBoardState({ type: 'commit', newBoard, newBlock });
         setIsCommitting(false);
-     }, [board, dispatchBoardState, droppingBlock, droppingColumn, droppingRow, droppingShape, holdingBlock]);
+     }, [board, dispatchBoardState, droppingBlock, droppingColumn, droppingRow, droppingShape, holdingBlock, justHeld]);
 
     const gameTick = useCallback(() => {
         if (isCommitting) {
@@ -127,7 +133,7 @@ export function useTetris() {
             setTickSpeed(TickSpeed.Sliding);
             setIsCommitting(true);
         } else {
-        dispatchBoardState({ type: 'drop' })
+            dispatchBoardState({ type: 'drop' })
         }
     }, [board,
         commitPosition,
@@ -167,44 +173,56 @@ export function useTetris() {
             if (event.repeat) {
                 return;
             }
-            if (event.key === 'ArrowDown') {
+            if (event.key === 'w') {
                 setTickSpeed(TickSpeed.Fast);
             }
 
-            if (event.key === 'ArrowUp') {
+            if (event.key === 'l') {
                 dispatchBoardState({
                     type: 'move',
-                    isRotating: true,
+                    isRotatingClockwise: true,
                 });
             }
 
-            if (event.key === 'ArrowLeft') {
+            if (event.key === 'j') {
+                dispatchBoardState({
+                    type: 'move',
+                    isRotatingAnticlockwise: true,
+                });
+            }
+
+            if (event.key === 'a') {
                 isPressingLeft = true;
                 updateMovementInterval();
             }
 
-            if (event.key === 'ArrowRight') {
+            if (event.key === 'd') {
                 isPressingRight = true;
                 updateMovementInterval();
             }
 
             if (event.key === 'Shift' && !justHeld) {
+                setJustHeld(true);
                 setHoldingBlock(droppingBlock)
                 swapHolding()
+            }
+
+            if (event.key === 's') {
+                setTickSpeed(TickSpeed.HardDrop);
             }
         };
 
         const handleKeyUp = (event: KeyboardEvent) => {
-            if (event.key === 'ArrowDown') {
-                setTickSpeed(TickSpeed.Normal);
+            if (event.key === 'w') {
+                setTickSpeed(rampingTickSpeed);
             }
 
-            if (event.key === 'ArrowLeft') {
+            if (event.key === 'a') {
                 isPressingLeft = false;
                 updateMovementInterval();
             }  
             
-            if (event.key === 'ArrowRight') {
+            if (event.key === 'd') {
                 isPressingRight = false;
                 updateMovementInterval();
             }
@@ -216,10 +234,10 @@ export function useTetris() {
         return () => {
             document.removeEventListener('keydown', handleKeyDown);
             document.removeEventListener('keyup', handleKeyUp);
-            setTickSpeed(TickSpeed.Normal);
+            setTickSpeed(rampingTickSpeed);
         };
 
-    }, [isPlaying, droppingBlock]);
+    }, [isPlaying, droppingBlock, justHeld, board, dispatchBoardState]);
 
     useInterval(() => {
         if (!isPlaying) {

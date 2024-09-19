@@ -1,3 +1,16 @@
+html {
+  background-color: #fffaf1;
+}
+
+* {
+  font-family: Ibm;
+}
+
+@font-face {
+  font-family: Ibm;
+  src: url(./assets/Fonts/IBMPlexSans-Regular.ttf);
+}
+
 .App {
   display: grid;
   grid-template-areas: 
@@ -6,13 +19,18 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
-h1 {
-  text-align: center;
+img {
+  justify-self: center;
   grid-area: title;
+  width: 300px;
+  margin-bottom: -10px;
 }
 
 .controls {
-  grid-area: controls
+  grid-area: controls;
+  display: grid;
+  grid-template-rows: 0fr 1fr;
+  grid-template-columns: 0fr;
 }
 
 .holdingBox {
@@ -22,16 +40,41 @@ h1 {
   grid-template-rows: 0fr 0fr;
 }
 
+.newGameButton {
+  padding: 10px 10px;
+  border-radius: 0;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px;
+  background-color: #a23333;
+  color: #fffaf1;
+  font-weight: 900;
+  align-self: end;
+  margin-bottom: 25px;
+}
+
+.newGameButton h2 {
+  margin: 0;
+  width: 125px;
+}
+
 .holdingBox h2 {
   width: 128px;
-  text-align: center;
+  text-align: end;
 }
 
 .board {
-  border: 2px solid black;
+  border: 7px solid black;
+  user-select: none;
+  margin: auto;
+}
+
+.boardContainer {
+  border: 1px solid black;
   user-select: none;
   margin: auto;
   grid-area: game;
+  padding: 10px;
 }
 
 .row {
@@ -41,7 +84,9 @@ h1 {
 .cell {
   width: 30px;
   aspect-ratio: 1;
-  border: 1px solid black;
+  border: 1px solid #bbbbbb;
+  margin-left: -1px;
+  margin-bottom: -1px;
 }
 
 .upcoming {
@@ -56,33 +101,47 @@ h1 {
 }
 
 .cell.Empty {
-  background-color: rgb(200, 200, 200);
+  background-color: #fffaf1;
 }
 
 .cell.I {
-  background-color: rgb(80, 227, 230);
+  background-color: #aecce4;
+  border-color: #2f2f2f;
+  z-index: 9;
 }
 
 .cell.J {
-  background-color: rgb(36, 95, 223);
+  background-color: #30476d;
+  border-color: #2f2f2f;
+  z-index: 9;
 }
 
 .cell.L {
-  background-color: rgb(223, 173, 36);
+  background-color: #fdaa4e;
+  border-color: #2f2f2f;
+  z-index: 9;
 }
 
 .cell.O {
-  background-color: rgb(223, 217, 36);
+  background-color: #ffe89d;
+  border-color: #2f2f2f;
+  z-index: 9;
 }
 
 .cell.S {
-  background-color: rgb(48, 211, 56);
+  background-color: #b8e600;
+  border-color: #2f2f2f;
+  z-index: 9;
 }
 
 .cell.T {
-  background-color: rgb(132, 61, 198);
+  background-color: #ab8cde;
+  border-color: #2f2f2f;
+  z-index: 9;
 }
 
 .cell.Z {
-  background-color: rgb(227, 78, 78);
+  background-color: #a23333;
+  border-color: #2f2f2f;
+  z-index: 9;
 }
