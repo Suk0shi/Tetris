@@ -3,11 +3,16 @@ import HoldingBlock from "./components/HoldingBlock";
 import UpcomingBlocks from './components/UpcomingBlocks';
 import { useTetris } from "./hooks/useTetris";
 import tetris from "./assets/tetris.png"
+import Controls from "./components/Controls";
 
 
 
 function App() {
-  const {board, startGame, isPlaying, score, upcomingBlocks, holdingBlock} = useTetris();
+  const {board, startGame, isPlaying, score, upcomingBlocks, holdingBlock,
+     setHardDropKey, hardDropKey, softDropKey, setSoftDropKey, leftKey,
+     setLeftKey, rightKey, setRightKey, rotateAntiClockwiseKey, 
+     setRotateAnticlockwiseKey, rotateClockwiseKey, setRotateClockwiseKey
+    } = useTetris();
 
 
   return (
@@ -31,6 +36,15 @@ function App() {
           <button className="newGameButton" onClick={startGame}><h2>New Game</h2></button>
         )}
       </div>
+      <div className="controlSettings">
+            <h1>Controls</h1>
+            <p>HardDrop <button onClick={() => Controls(setHardDropKey)}>{hardDropKey}</button></p>
+            <p>SoftDrop <button onClick={() => Controls(setSoftDropKey)}>{softDropKey}</button></p>
+            <p>Left <button onClick={() => Controls(setLeftKey)}>{leftKey}</button></p>
+            <p>Right <button onClick={() => Controls(setRightKey)}>{rightKey}</button></p>
+            <p>Rotate Anticlockwise <button onClick={() => Controls(setRotateAnticlockwiseKey)}>{rotateAntiClockwiseKey}</button></p>
+            <p>Rotate Clockwise <button onClick={() => Controls(setRotateClockwiseKey)}>{rotateAntiClockwiseKey}</button></p>
+        </div>
     </div>
   )
 }

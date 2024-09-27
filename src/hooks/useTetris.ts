@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { BOARD_HEIGHT, getRandomBlock, hasCollisions, useTetrisBoard } from "./useTetrisBoard";
 import { useInterval } from "./useInterval";
 import { Block, BlockShape, BoardShape, EmptyCell, SHAPES } from "../types";
+import blockLand from "../assets/Sounds/blockLand.wav"
+import lineClear from "../assets/Sounds/lineClear.wav"
 
 enum TickSpeed {
     Normal = 800,
@@ -18,7 +20,14 @@ export function useTetris() {
     const [upcomingBlocks, setUpcomingBlocks] = useState<Block[]>([]);
     const [holdingBlock, setHoldingBlock] = useState<Block | null>(null);
     const [justHeld, setJustHeld] = useState(false);
+    const [justLayed, setJustLayed] = useState(false);
     const [rampingTickSpeed, setRampingTickSpeed] = useState<number>(800);
+    const [hardDropKey, setHardDropKey] = useState<string>('s');
+    const [leftKey, setLeftKey] = useState<string>('a');
+    const [rightKey, setRightKey] = useState<string>('d');
+    const [rotateClockwiseKey, setRotateClockwiseKey] = useState<string>('l');
+    const [rotateAntiClockwiseKey, setRotateAnticlockwiseKey] = useState<string>('j');
+    const [softDropKey, setSoftDropKey] = useState<string>('w');
     
     const [
         { board, droppingRow, droppingColumn, droppingBlock, droppingShape },
@@ -47,6 +56,11 @@ export function useTetris() {
         return;
        } 
 
+    //    setJustLayed(true);
+    //    isPressingLeft = false;
+    //    isPressingRight = false;
+    //    clearInterval(moveIntervalID);
+
        const newBoard = structuredClone(board) as BoardShape;
        addShapeToBoard(
         newBoard,
@@ -61,6 +75,7 @@ export function useTetris() {
             if (newBoard[row].every((entry) => entry !== EmptyCell.Empty)) {
                 numCleared++;
                 newBoard.splice(row, 1);
+                new Audio(lineClear).play();
             }
        }
 
@@ -80,10 +95,11 @@ export function useTetris() {
        setUpcomingBlocks(newUpcomingBlocks);
        dispatchBoardState({ type: 'commit', newBoard, newBlock });
        setIsCommitting(false);
-       setJustHeld(false)
-       if (rampingTickSpeed > 100) {
-           setRampingTickSpeed(rampingTickSpeed - 30)
+       setJustHeld(false);
+       if (rampingTickSpeed > 200) {
+           setRampingTickSpeed(rampingTickSpeed - 20)
        }
+       new Audio(blockLand).play();
     }, [board, dispatchBoardState, droppingBlock, droppingColumn, droppingRow, droppingShape, justHeld]);
 
     const swapHolding = useCallback(() => {
@@ -143,17 +159,22 @@ export function useTetris() {
         droppingShape,
         isCommitting,
     ]);
-
+    
+    let moveIntervalID: number | undefined;
+    let isPressingLeft = false;
+    let isPressingRight = false;
+    
     useEffect(() => {
         if (!isPlaying) {
             return;
         }
-
-        let isPressingLeft = false;
-        let isPressingRight = false;
-        let moveIntervalID: number | undefined;
+        
 
         const updateMovementInterval = () => {
+            if (justLayed) {
+                clearInterval(moveIntervalID);
+                return;
+            }
             clearInterval(moveIntervalID);
             dispatchBoardState({
                 type: 'move',
@@ -166,37 +187,37 @@ export function useTetris() {
                     isPressingLeft,
                     isPressingRight,
                 });
-            }, 300);
+            }, 100);
         };
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.repeat) {
                 return;
             }
-            if (event.key === 'w') {
+            if (event.key === softDropKey) {
                 setTickSpeed(TickSpeed.Fast);
             }
 
-            if (event.key === 'l') {
+            if (event.key === rotateClockwiseKey) {
                 dispatchBoardState({
                     type: 'move',
                     isRotatingClockwise: true,
                 });
             }
 
-            if (event.key === 'j') {
+            if (event.key === rotateAntiClockwiseKey) {
                 dispatchBoardState({
                     type: 'move',
                     isRotatingAnticlockwise: true,
                 });
             }
 
-            if (event.key === 'a') {
+            if (event.key === leftKey) {
                 isPressingLeft = true;
                 updateMovementInterval();
             }
 
-            if (event.key === 'd') {
+            if (event.key === rightKey) {
                 isPressingRight = true;
                 updateMovementInterval();
             }
@@ -207,22 +228,22 @@ export function useTetris() {
                 swapHolding()
             }
 
-            if (event.key === 's') {
+            if (event.key === hardDropKey) {
                 setTickSpeed(TickSpeed.HardDrop);
             }
         };
 
         const handleKeyUp = (event: KeyboardEvent) => {
-            if (event.key === 'w') {
+            if (event.key === softDropKey) {
                 setTickSpeed(rampingTickSpeed);
             }
 
-            if (event.key === 'a') {
+            if (event.key === leftKey) {
                 isPressingLeft = false;
                 updateMovementInterval();
             }  
             
-            if (event.key === 'd') {
+            if (event.key === rightKey) {
                 isPressingRight = false;
                 updateMovementInterval();
             }
@@ -237,7 +258,7 @@ export function useTetris() {
             setTickSpeed(rampingTickSpeed);
         };
 
-    }, [isPlaying, droppingBlock, justHeld, board, dispatchBoardState]);
+    }, [isPlaying, droppingBlock, justHeld, board, dispatchBoardState, justLayed]);
 
     useInterval(() => {
         if (!isPlaying) {
@@ -265,6 +286,18 @@ export function useTetris() {
         score,
         upcomingBlocks,
         holdingBlock,
+        hardDropKey,
+        setHardDropKey,
+        softDropKey,
+        setSoftDropKey,
+        leftKey,
+        setLeftKey,
+        rightKey,
+        setRightKey,
+        rotateAntiClockwiseKey,
+        setRotateAnticlockwiseKey,
+        rotateClockwiseKey,
+        setRotateClockwiseKey
     };
 }
 
