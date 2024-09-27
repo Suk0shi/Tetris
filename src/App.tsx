@@ -43,7 +43,7 @@ function App() {
             <p>Left <button onClick={() => Controls(setLeftKey)}>{leftKey}</button></p>
             <p>Right <button onClick={() => Controls(setRightKey)}>{rightKey}</button></p>
             <p>Rotate Anticlockwise <button onClick={() => Controls(setRotateAnticlockwiseKey)}>{rotateAntiClockwiseKey}</button></p>
-            <p>Rotate Clockwise <button onClick={() => Controls(setRotateClockwiseKey)}>{rotateAntiClockwiseKey}</button></p>
+            <p>Rotate Clockwise <button onClick={() => Controls(setRotateClockwiseKey)}>{rotateClockwiseKey}</button></p>
         </div>
     </div>
   )
