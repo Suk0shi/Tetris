@@ -19,11 +19,56 @@ html {
   grid-template-columns: repeat(3, 1fr);
 }
 
+body {
+  margin: 0;
+}
+
 img {
   justify-self: center;
   grid-area: title;
   width: 300px;
   margin-bottom: -10px;
+}
+
+.settingsIcon {
+  display: grid;
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  grid-template-columns: 0fr 0fr;
+  gap: 8px;
+}
+
+.controlSettingsWrapper {
+  display: grid;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+  background-color: #2f2f2fd0;
+}
+
+.controlSettings {
+  background-color: #fffaf1;
+  padding: 50px 200px;
+  border: 7px solid black;
+}
+
+.controlSettings h1 {
+  text-align: center;
+}
+
+.controlSettings p {
+  display: grid;
+  grid-template-columns: 1fr 0fr;
+  gap: 20px;
+  align-items: center;
+}
+
+.controlSettings button {
+  width: 30px;
+  height: 30px;
 }
 
 .controls {

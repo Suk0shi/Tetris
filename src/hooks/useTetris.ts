@@ -174,20 +174,21 @@ export function useTetris() {
             if (justLayed) {
                 clearInterval(moveIntervalID);
                 return;
-            }
-            clearInterval(moveIntervalID);
-            dispatchBoardState({
-                type: 'move',
-                isPressingLeft,
-                isPressingRight,
-            });
-            moveIntervalID = setInterval(() => {
+            } else {
+                clearInterval(moveIntervalID);
                 dispatchBoardState({
                     type: 'move',
                     isPressingLeft,
                     isPressingRight,
                 });
-            }, 100);
+                moveIntervalID = setInterval(() => {
+                    dispatchBoardState({
+                        type: 'move',
+                        isPressingLeft,
+                        isPressingRight,
+                    });
+                }, 100);
+            }
         };
 
         const handleKeyDown = (event: KeyboardEvent) => {
