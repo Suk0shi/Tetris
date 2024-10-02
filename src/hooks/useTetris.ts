@@ -20,7 +20,7 @@ export function useTetris() {
     const [upcomingBlocks, setUpcomingBlocks] = useState<Block[]>([]);
     const [holdingBlock, setHoldingBlock] = useState<Block | null>(null);
     const [justHeld, setJustHeld] = useState(false);
-    const [justLayed, setJustLayed] = useState(false);
+    // const [justLayed, setJustLayed] = useState(false);
     const [rampingTickSpeed, setRampingTickSpeed] = useState<number>(800);
     const [hardDropKey, setHardDropKey] = useState<string>('s');
     const [leftKey, setLeftKey] = useState<string>('a');
@@ -171,10 +171,10 @@ export function useTetris() {
         
 
         const updateMovementInterval = () => {
-            if (justLayed) {
-                clearInterval(moveIntervalID);
-                return;
-            } else {
+            // if (justLayed) {
+            //     clearInterval(moveIntervalID);
+            //     return;
+            // } else {
                 clearInterval(moveIntervalID);
                 dispatchBoardState({
                     type: 'move',
@@ -188,7 +188,7 @@ export function useTetris() {
                         isPressingRight,
                     });
                 }, 100);
-            }
+            // }
         };
 
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -259,7 +259,7 @@ export function useTetris() {
             setTickSpeed(rampingTickSpeed);
         };
 
-    }, [isPlaying, droppingBlock, justHeld, board, dispatchBoardState, justLayed]);
+    }, [isPlaying, droppingBlock, justHeld, board, dispatchBoardState]);
 
     useInterval(() => {
         if (!isPlaying) {

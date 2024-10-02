@@ -8,7 +8,7 @@ export type BoardState = {
     board: BoardShape;
     droppingRow: number;
     droppingColumn: number;
-    droppingBlock: Block;
+    droppingBlock: Block | undefined;
     droppingShape: BlockShape;
 }
 

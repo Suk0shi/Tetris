@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
-
 function Controls(keyFunction : Function) {
      
     const waitForKeyPress = () => {
         return new Promise((resolve) => {
-          const handleKeyDown = (event) => {
-            resolve(event.key); // Resolve the promise with the pressed key
-            window.removeEventListener("keydown", handleKeyDown); // Clean up
+          const handleKeyDown = (event: { key: unknown; }) => {
+            resolve(event.key); 
+            window.removeEventListener("keydown", handleKeyDown); 
           };
     
           window.addEventListener("keydown", handleKeyDown);
