@@ -8,7 +8,7 @@ export type BoardState = {
     board: BoardShape;
     droppingRow: number;
     droppingColumn: number;
-    droppingBlock: Block | undefined;
+    droppingBlock: Block;
     droppingShape: BlockShape;
 }
 
@@ -139,8 +139,8 @@ function boardReducer(state: BoardState, action: Action): BoardState {
                 ],
                 droppingRow: 0,
                 droppingColumn: 3,
-                droppingBlock: action.newBlock,
-                droppingShape: SHAPES[action.newBlock].shape,
+                droppingBlock: action.newBlock!,
+                droppingShape: SHAPES[action.newBlock!].shape,
             }
         case 'move':
             const rotatedShape = action.isRotatingClockwise

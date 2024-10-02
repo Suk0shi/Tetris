@@ -307,7 +307,7 @@ function addShapeToBoard(
     droppingBlock: Block,
     droppingShape: BlockShape,
     droppingRow: number, 
-    droppingColumn: number
+    droppingColumn: number,
 ) {
     droppingShape 
         .filter((row) => row.some((isSet) => isSet))
